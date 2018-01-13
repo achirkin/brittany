@@ -185,6 +185,7 @@ data ColSig
   | ColBindStmt
   | ColDoLet -- the non-indented variant
   | ColRecUpdate -- used for both RecCon and RecUpd. TODO: refactor to reflect?
+  | ColRecDecl
   | ColListComp
   | ColList
   | ColApp Text
@@ -410,7 +411,7 @@ briDocForceSpine bd = briDocSeqSpine bd `seq` bd
 
 data VerticalSpacingPar
   = VerticalSpacingParNone -- no indented lines
-  | VerticalSpacingParSome   Int -- indented lines, requiring this much 
+  | VerticalSpacingParSome   Int -- indented lines, requiring this much
                                  -- vertical space at most
   | VerticalSpacingParAlways Int -- indented lines, requiring this much
                                  -- vertical space at most, but should
