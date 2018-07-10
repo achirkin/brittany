@@ -17,6 +17,7 @@ import           Language.Haskell.Brittany.Internal.Config.Types
 
 import           RdrName ( RdrName(..) )
 import           GHC ( Located, runGhc, GenLocated(L), moduleNameString )
+import           BasicTypes (DerivStrategy(..))
 import qualified GHC
 import           HsSyn
 import           Name
@@ -138,24 +139,39 @@ createBndrDoc bs = do
             ]
 
 createDerivingPar
-  :: HsDeriving RdrName
-  -> ToBriDocM BriDocNumbered
-  -> ToBriDocM BriDocNumbered
+  :: HsDeriving RdrName -> ToBriDocM BriDocNumbered -> ToBriDocM BriDocNumbered
 createDerivingPar mDerivs mainDoc = do
   case mDerivs of
-    Nothing                 -> docLines [mainDoc]
-    Just (L _ [(HsIB _ t)]) -> do
-      docPar mainDoc $ docEnsureIndent BrIndentRegular $ docSeq
-        [docDeriving, docSeparator, layoutType t]
-    Just (L _ ts          ) -> do
-      docPar mainDoc $ docEnsureIndent BrIndentRegular $ docSeq
-        [ docDeriving
-        , docSeparator
-        , docLit $ Text.pack "("
-        , docSeq $ List.intersperse docCommaSep $ ts <&> \(HsIB _ t) ->
-          layoutType t
-        , docLit $ Text.pack ")"
-        ]
+    (L _ []) -> docLines [mainDoc]
+    (L _ types) ->
+      docPar mainDoc
+        $   docEnsureIndent BrIndentRegular
+        $   docLines
+        $   derivingClause
+        <$> types
+ where
+  handleStrategy = \case
+    (L _ StockStrategy   ) -> docLit $ Text.pack ""
+    (L _ AnyclassStrategy) -> docLit $ Text.pack "anyclass"
+    (L _ NewtypeStrategy ) -> docLit $ Text.pack "newtype"
+  derivingClause (L _ (HsDerivingClause mStrategy types)) = case types of
+    (L _ []) -> docSeq []
+    (L _ ts) ->
+      let
+        tsLength = length ts
+        whenMoreThan1Type val =
+          if tsLength > 1 then docLit (Text.pack val) else docLit (Text.pack "")
+      in
+        docSeq
+          [ docDeriving
+          , docSeq
+            $ maybe [] ((docSeparator :) . pure . handleStrategy) mStrategy
+          , docSeparator
+          , whenMoreThan1Type "("
+          , docSeq $ List.intersperse docCommaSep $ ts <&> \(HsIB _ t _) ->
+            layoutType t
+          , whenMoreThan1Type ")"
+          ]
 
 docDeriving :: ToBriDocM BriDocNumbered
 docDeriving = docLit $ Text.pack "deriving"

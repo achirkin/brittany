@@ -41,6 +41,7 @@ import           Language.Haskell.Brittany.Internal.Layouters.Type
 import {-# SOURCE #-} Language.Haskell.Brittany.Internal.Layouters.Expr
 import {-# SOURCE #-} Language.Haskell.Brittany.Internal.Layouters.Stmt
 import           Language.Haskell.Brittany.Internal.Layouters.Pattern
+import           Language.Haskell.Brittany.Internal.Layouters.DataDecl
 
 import           Bag ( mapBagM )
 
@@ -52,6 +53,8 @@ layoutDecl d@(L loc decl) = case decl of
   ValD bind -> withTransformedAnns d $ layoutBind (L loc bind) >>= \case
     Left  ns -> docLines $ return <$> ns
     Right n  -> return n
+  TyClD (DataDecl name tyVars _ dataDefn _ _) ->
+    withTransformedAnns d $ layoutDataDecl d name tyVars dataDefn
   InstD (TyFamInstD{}) -> do
     -- this is a (temporary (..)) workaround for "type instance" decls
     -- that do not round-trip through exactprint properly.

@@ -350,6 +350,15 @@ data Foo = Bar
   }
   deriving (Show, Eq, Monad, Functor, Traversable, Foldable)
 
+#test record multiple deriving strategies
+data Foo = Bar
+  { foo  :: Baz
+  , bars :: Bizzz
+  }
+  deriving Show
+  deriving anyclass (Show, Eq, Monad, Functor)
+  deriving newtype (Traversable, Foldable)
+
 
 ###############################################################################
 ###############################################################################
