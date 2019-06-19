@@ -1,4 +1,3 @@
-{-# LANGUAGE TemplateHaskell #-}
 {-# LANGUAGE DeriveGeneric #-}
 {-# LANGUAGE StandaloneDeriving #-}
 {-# LANGUAGE RankNTypes #-}
@@ -321,10 +320,75 @@ instance CFunctor CForwardOptions
 instance CFunctor CPreProcessorConfig
 instance CFunctor CConfig
 
-deriveCZipWith ''CDebugConfig
-deriveCZipWith ''CLayoutConfig
-deriveCZipWith ''CErrorHandlingConfig
-deriveCZipWith ''CForwardOptions
-deriveCZipWith ''CPreProcessorConfig
-deriveCZipWith ''CConfig
+-- deriveCZipWith ''CDebugConfig
+-- deriveCZipWith ''CLayoutConfig
+-- deriveCZipWith ''CErrorHandlingConfig
+-- deriveCZipWith ''CForwardOptions
+-- deriveCZipWith ''CPreProcessorConfig
+-- deriveCZipWith ''CConfig
+
+
+instance CZipWith CDebugConfig where
+      cZipWith
+        f
+        (DebugConfig x1 x2 x3 x4 x5 x6 x7 x8 x9 x10 x11 x12)
+        (DebugConfig y1 y2 y3 y4 y5 y6 y7 y8 y9 y10 y11 y12)
+        = (((((((((((DebugConfig ((f x1) y1)) ((f x2) y2)) ((f x3) y3))
+                    ((f x4) y4))
+                   ((f x5) y5))
+                  ((f x6) y6))
+                 ((f x7) y7))
+                ((f x8) y8))
+               ((f x9) y9))
+              ((f x10) y10))
+             ((f x11) y11))
+            ((f x12) y12)
+
+instance CZipWith CLayoutConfig where
+      cZipWith
+        f
+        (LayoutConfig x1 x2 x3 x4 x5 x6 x7 x8 x9 x10 x11 x12 x13 x14 x15)
+        (LayoutConfig y1 y2 y3 y4 y5 y6 y7 y8 y9 y10 y11 y12 y13 y14 y15)
+        = ((((((((((((((LayoutConfig ((f x1) y1)) ((f x2) y2)) ((f x3) y3))
+                       ((f x4) y4))
+                      ((f x5) y5))
+                     ((f x6) y6))
+                    ((f x7) y7))
+                   ((f x8) y8))
+                  ((f x9) y9))
+                 ((f x10) y10))
+                ((f x11) y11))
+               ((f x12) y12))
+              ((f x13) y13))
+             ((f x14) y14))
+            ((f x15) y15)
+
+instance CZipWith CErrorHandlingConfig where
+      cZipWith
+        f
+        (ErrorHandlingConfig x1 x2 x3 x4)
+        (ErrorHandlingConfig y1 y2 y3 y4)
+        = (((ErrorHandlingConfig ((f x1) y1)) ((f x2) y2)) ((f x3) y3))
+            ((f x4) y4)
+
+instance CZipWith CForwardOptions where
+      cZipWith f (ForwardOptions x1) (ForwardOptions y1)
+        = ForwardOptions ((f x1) y1)
+
+instance CZipWith CPreProcessorConfig where
+      cZipWith f (PreProcessorConfig x1 x2) (PreProcessorConfig y1 y2)
+        = (PreProcessorConfig ((f x1) y1)) ((f x2) y2)
+
+instance CZipWith CConfig where
+      cZipWith
+        f
+        (Config x1 x2 x3 x4 x5 x6 x7 x8)
+        (Config y1 y2 y3 y4 y5 y6 y7 y8)
+        = (((((((Config ((f x1) y1)) (((cZipWith f) x2) y2))
+                 (((cZipWith f) x3) y3))
+                (((cZipWith f) x4) y4))
+               (((cZipWith f) x5) y5))
+              (((cZipWith f) x6) y6))
+             ((f x7) y7))
+            ((f x8) y8)
 
